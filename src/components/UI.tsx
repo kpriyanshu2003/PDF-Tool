@@ -1,47 +1,59 @@
-export default function UI({ theme }: { theme: boolean }) {
-  return (
-    <>
-      {theme ? (
-        <Uno name="hola" email="admin@email.com" phone="12345" />
-      ) : (
-        <Dos name="hola" email="admin@email.com" phone="12345" />
-      )}
-    </>
-  );
+import { useContext } from "react";
+import { ThemeContext } from "../context/ThemeContextProvider";
+import { FormInputs } from "../constants/Form";
+import { FormDataContext } from "../context/FormDataContextProvider";
+
+export default function UI() {
+  const { theme } = useContext(ThemeContext);
+  return <>{theme ? <Uno /> : <Dos />}</>;
 }
 
-function Uno({
-  name,
-  email,
-  phone,
-}: {
-  name: string;
-  email: string;
-  phone: string;
-}) {
+function Uno() {
+  const { formData, setFormData } = useContext(FormDataContext);
   return (
-    <div className="bg-white text-violet-600">
-      <div>{name}</div>
-      <div>{email}</div>
-      <div>{phone}</div>
+    <div className="bg-white text-violet-600 h-full">
+      {FormInputs.map((item) => (
+        <div key={item.key}>
+          <input
+            type={item.type}
+            placeholder={item.placeholder}
+            className=" w-full outline-none"
+            value={formData[item.key as keyof typeof formData]} // Type assertion
+            onChange={(e) => {
+              setFormData({
+                ...formData,
+                [item.key]: e.target.value,
+              });
+            }}
+          />
+          <br />
+        </div>
+      ))}
     </div>
   );
 }
 
-function Dos({
-  name,
-  email,
-  phone,
-}: {
-  name: string;
-  email: string;
-  phone: string;
-}) {
+function Dos() {
+  const { formData, setFormData } = useContext(FormDataContext);
   return (
-    <div className="bg-black text-white">
-      <div>{name}</div>
-      <div>{email}</div>
-      <div>{phone}</div>
+    <div className="bg-black text-white h-full">
+      {FormInputs.map((item) => (
+        <div key={item.key}>
+          <input
+            type={item.type}
+            placeholder={item.placeholder}
+            className=" w-full outline-none bg-transparent"
+            value={formData[item.key as keyof typeof formData]} // Type assertion
+            onChange={(e) => {
+              setFormData({
+                ...formData,
+                [item.key]: e.target.value,
+              });
+            }}
+          />
+          <br />
+        </div>
+      ))}
     </div>
   );
 }

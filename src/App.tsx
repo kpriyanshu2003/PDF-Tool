@@ -2,17 +2,14 @@ import React from "react";
 import { FormInputs } from "./constants/Form";
 import { PDFPreview } from "./components/Preview";
 import UI from "./components/UI";
+import { ThemeContext } from "./context/ThemeContextProvider";
+import { FormDataContext } from "./context/FormDataContextProvider";
 
 function App() {
+  const { theme, setTheme } = React.useContext(ThemeContext);
+  const { formData, setFormData } = React.useContext(FormDataContext);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [showFilePreview, setShowFilePreview] = React.useState(false);
-  const [formData, setFormData] = React.useState({
-    name: "",
-    email: "",
-    phone: "",
-    filename: "",
-  });
-  const [theme, setTheme] = React.useState<boolean>(true); // true if theme is light
 
   const showPreviewFile = () => {
     if (
@@ -114,7 +111,7 @@ function App() {
             </button>
           </div>
           <div className="border h-80 my-10">
-            <UI theme={theme} />
+            <UI />
           </div>
           <div className="flex items-center gap-3 justify-center">
             <button
