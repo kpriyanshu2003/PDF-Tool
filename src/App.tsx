@@ -1,6 +1,7 @@
 import React from "react";
 import { FormInputs } from "./constants/Form";
 import { PDFPreview } from "./components/Preview";
+import UI from "./components/UI";
 
 function App() {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -11,6 +12,7 @@ function App() {
     phone: "",
     filename: "",
   });
+  const [theme, setTheme] = React.useState<boolean>(true); // true if theme is light
 
   const showPreviewFile = () => {
     if (
@@ -26,6 +28,7 @@ function App() {
   };
   return (
     <div className="relative overflow-hidden h-screen">
+      {/* NavBar */}
       <nav
         className={`border h-20 flex items-center px-14 shadow-sm
       ${showFilePreview && "blur-md"}`}
@@ -37,7 +40,8 @@ function App() {
         className={`border flex items-center justify-around 
         ${showFilePreview && "blur-md"}`}
       >
-        <div className="border w-1/2 mx-10">
+        {/* Left */}
+        <div className="w-1/2 mx-10">
           <>
             {FormInputs.map((item) => (
               <div key={item.key}>
@@ -60,7 +64,7 @@ function App() {
           <div className="text-center">
             <button
               onClick={() => console.table(formData)}
-              className="outline-none border rounded-md p-4 px-10 bg-gray-300 hover:bg-gray-400 transition-all duration-300 mx-4"
+              className="active:scale-90 outline-none border rounded-md p-4 px-10 bg-gray-300 hover:bg-gray-400 transition-all duration-300 mx-4"
             >
               Submit
             </button>
@@ -68,7 +72,7 @@ function App() {
               onClick={() =>
                 setFormData({ name: "", email: "", phone: "", filename: "" })
               }
-              className="outline-none border rounded-md p-4 px-10 bg-gray-300 hover:bg-gray-400 transition-all duration-300  mx-4"
+              className="active:scale-90 outline-none border rounded-md p-4 px-10 bg-gray-300 hover:bg-gray-400 transition-all duration-300  mx-4"
             >
               Clear
             </button>
@@ -82,14 +86,51 @@ function App() {
             />
             <button
               onClick={() => showPreviewFile()}
-              className="outline-none border rounded-md p-2 px-10 bg-gray-300 hover:bg-gray-400 transition-all duration-300  mx-4"
+              className="active:scale-90 outline-none border rounded-md p-2 px-10 bg-gray-300 hover:bg-gray-400 transition-all duration-300  mx-4"
             >
               Preview
             </button>
           </div>
         </div>
 
-        <div className="w-1/2 mx-10 border">Right</div>
+        {/* Right */}
+        <div className="w-1/2 mx-10 ">
+          <div className="flex items-center gap-3 justify-center mb-10">
+            <button
+              onClick={() => setTheme(true)}
+              className={`active:scale-90 p-2 px-4 border rounded-lg ${
+                theme ? "bg-gray-400" : "bg-gray-300"
+              }`}
+            >
+              Light UI
+            </button>
+            <button
+              onClick={() => setTheme(false)}
+              className={`active:scale-90 p-2 px-4 border rounded-lg ${
+                !theme ? "bg-gray-400" : "bg-gray-300"
+              }`}
+            >
+              Dark UI
+            </button>
+          </div>
+          <div className="border h-80 my-10">
+            <UI theme={theme} />
+          </div>
+          <div className="flex items-center gap-3 justify-center">
+            <button
+              // onClick={() => showPreviewFile()}
+              className="active:scale-90 outline-none border rounded-md p-2 px-10 bg-gray-300 hover:bg-gray-400 transition-all duration-300  mx-4"
+            >
+              Preview
+            </button>
+            <button
+              // onClick={() => showPreviewFile()}
+              className="active:scale-90 outline-none border rounded-md p-2 px-10 bg-gray-300 hover:bg-gray-400 transition-all duration-300  mx-4"
+            >
+              Download
+            </button>
+          </div>
+        </div>
       </div>
       {showFilePreview && fileInputRef.current?.files && (
         <PDFPreview
