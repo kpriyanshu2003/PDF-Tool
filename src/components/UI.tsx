@@ -14,10 +14,11 @@ function Uno() {
     <div className="bg-white text-violet-600 h-full">
       {FormInputs.map((item) => (
         <div key={item.key}>
+          <span className="text-red-300">{item.key}</span>
           <input
             type={item.type}
             placeholder={item.placeholder}
-            className=" w-full outline-none"
+            className="w-full outline-none my-4"
             value={formData[item.key as keyof typeof formData]} // Type assertion
             onChange={(e) => {
               setFormData({
@@ -39,6 +40,7 @@ function Dos() {
     <div className="bg-black text-white h-full">
       {FormInputs.map((item) => (
         <div key={item.key}>
+          <span className="text-blue-700">{item.key}</span>
           <input
             type={item.type}
             placeholder={item.placeholder}

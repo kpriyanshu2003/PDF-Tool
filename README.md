@@ -15,3 +15,7 @@ Task : Create a single page website, and do the following ( styling doesn't matt
 
 - Once everything is done, merge pdf + right ( with filename as pdf )
 - Single page pdf is no pdf uploaded
+
+Issues:
+
+- Right Side buttons need to be clicked twice to update the right side

@@ -13,11 +13,10 @@ export function PDFPreview({
   file,
   showFilePreview,
 }: {
-  file: File | undefined | null;
+  file: File | string | undefined | null;
   showFilePreview: (show: boolean) => void;
 }) {
   const [numPages, setNumPages] = useState<number>();
-
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
     setNumPages(numPages);
   }

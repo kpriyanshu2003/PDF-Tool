@@ -4,25 +4,76 @@ import { PDFPreview } from "./components/Preview";
 import UI from "./components/UI";
 import { ThemeContext } from "./context/ThemeContextProvider";
 import { FormDataContext } from "./context/FormDataContextProvider";
+import { createPDF, fileToArrayBuffer, mergePDF } from "./lib/pdf";
 
 function App() {
   const { theme, setTheme } = React.useContext(ThemeContext);
   const { formData, setFormData } = React.useContext(FormDataContext);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [showFilePreview, setShowFilePreview] = React.useState(false);
 
-  const showPreviewFile = () => {
-    if (
-      !fileInputRef.current ||
-      !fileInputRef.current.files ||
-      !fileInputRef.current.files[0]
-    ) {
-      alert("Please select a file");
-      return;
+  const fileInputRef = React.useRef<HTMLInputElement | string>(null);
+  const [newPdf, setNewPdf] = React.useState<ArrayBuffer | null>(null);
+  const [showFilePreview, setShowFilePreview] = React.useState(false);
+  const [url, setUrl] = React.useState<string>();
+
+  const showPreviewFile = (shownew?: boolean) => {
+    if (!shownew) {
+      if (
+        !fileInputRef.current ||
+        !fileInputRef.current.files ||
+        !fileInputRef.current.files[0]
+      ) {
+        alert("Please select a file");
+        return;
+      }
+      setUrl(URL.createObjectURL(fileInputRef.current.files[0])); // Assuming you want to create a URL for the selected file
     }
-    console.log(fileInputRef.current.files[0]);
     setShowFilePreview(true);
   };
+
+  const handleCreatePDF = async () => {
+    createPDF(document.getElementById("pdf-content"), setNewPdf);
+  };
+
+  const handlePDFMerge = async () => {
+    await handleCreatePDF();
+    if (!newPdf) {
+      alert("Try Again !");
+      return;
+    }
+
+    const dtA = [];
+    dtA.push(newPdf as ArrayBuffer);
+    if (
+      fileInputRef.current &&
+      fileInputRef.current.files &&
+      fileInputRef.current.files[0]
+    ) {
+      dtA.push(await fileToArrayBuffer(fileInputRef.current.files[0]));
+    }
+    const dt = await mergePDF(dtA);
+
+    const pdfBlob = new Blob([dt], { type: "application/pdf" });
+    const url = URL.createObjectURL(pdfBlob);
+    console.log(url);
+    setUrl(url);
+  };
+
+  const handlePDFPreview = async () => {
+    await handlePDFMerge();
+    showPreviewFile(true);
+  };
+
+  const handlePDFDownload = async () => {
+    await handlePDFMerge();
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = formData.filename || "output.pdf";
+    a.textContent = "Download PDF";
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="relative overflow-hidden h-screen">
       {/* NavBar */}
@@ -111,17 +162,19 @@ function App() {
             </button>
           </div>
           <div className="border h-80 my-10">
-            <UI />
+            <div id="pdf-content">
+              <UI />
+            </div>
           </div>
           <div className="flex items-center gap-3 justify-center">
             <button
-              // onClick={() => showPreviewFile()}
+              onClick={() => handlePDFPreview()}
               className="active:scale-90 outline-none border rounded-md p-2 px-10 bg-gray-300 hover:bg-gray-400 transition-all duration-300  mx-4"
             >
               Preview
             </button>
             <button
-              // onClick={() => showPreviewFile()}
+              onClick={() => handlePDFDownload()}
               className="active:scale-90 outline-none border rounded-md p-2 px-10 bg-gray-300 hover:bg-gray-400 transition-all duration-300  mx-4"
             >
               Download
@@ -129,11 +182,8 @@ function App() {
           </div>
         </div>
       </div>
-      {showFilePreview && fileInputRef.current?.files && (
-        <PDFPreview
-          file={fileInputRef.current.files[0]}
-          showFilePreview={setShowFilePreview}
-        />
+      {showFilePreview && (
+        <PDFPreview file={url} showFilePreview={setShowFilePreview} />
       )}
     </div>
   );
