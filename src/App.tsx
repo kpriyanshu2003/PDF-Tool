@@ -49,7 +49,7 @@ function App() {
       fileInputRef.current.files &&
       fileInputRef.current.files[0]
     ) {
-      dtA.push(await fileToArrayBuffer(fileInputRef.current.files[0]));
+      dtA.unshift(await fileToArrayBuffer(fileInputRef.current.files[0]));
     }
 
     const dt = await mergePDF(dtA);
@@ -114,22 +114,7 @@ function App() {
               </div>
             ))}
           </>
-          <div className="text-center">
-            <button
-              onClick={() => console.table(formData)}
-              className="active:scale-90 outline-none border rounded-md p-4 px-10 bg-gray-300 hover:bg-gray-400 transition-all duration-300 mx-4"
-            >
-              Submit
-            </button>
-            <button
-              onClick={() =>
-                setFormData({ name: "", email: "", phone: "", filename: "" })
-              }
-              className="active:scale-90 outline-none border rounded-md p-4 px-10 bg-gray-300 hover:bg-gray-400 transition-all duration-300  mx-4"
-            >
-              Clear
-            </button>
-          </div>
+
           <div className="flex items-center gap-3">
             <input
               type="file"
