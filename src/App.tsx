@@ -1,7 +1,7 @@
 import React from "react";
+import UI from "./components/UI";
 import { FormInputs } from "./constants/Form";
 import { PDFPreview } from "./components/Preview";
-import UI from "./components/UI";
 import { ThemeContext } from "./context/ThemeContextProvider";
 import { FormDataContext } from "./context/FormDataContextProvider";
 import { createPDF, fileToArrayBuffer, mergePDF } from "./lib/pdf";
@@ -10,10 +10,10 @@ function App() {
   const { theme, setTheme } = React.useContext(ThemeContext);
   const { formData, setFormData } = React.useContext(FormDataContext);
 
-  const fileInputRef = React.useRef<HTMLInputElement | string>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [newPdf, setNewPdf] = React.useState<ArrayBuffer | null>(null);
   const [showFilePreview, setShowFilePreview] = React.useState(false);
-  const [url, setUrl] = React.useState<string>();
+  const [url, setUrl] = React.useState<string | undefined>();
 
   const showPreviewFile = (shownew?: boolean) => {
     if (!shownew) {
@@ -25,7 +25,7 @@ function App() {
         alert("Please select a file");
         return;
       }
-      setUrl(URL.createObjectURL(fileInputRef.current.files[0])); // Assuming you want to create a URL for the selected file
+      setUrl(URL.createObjectURL(fileInputRef.current.files[0]));
     }
     setShowFilePreview(true);
   };
@@ -43,6 +43,7 @@ function App() {
 
     const dtA = [];
     dtA.push(newPdf as ArrayBuffer);
+
     if (
       fileInputRef.current &&
       fileInputRef.current.files &&
@@ -50,12 +51,12 @@ function App() {
     ) {
       dtA.push(await fileToArrayBuffer(fileInputRef.current.files[0]));
     }
-    const dt = await mergePDF(dtA);
 
+    const dt = await mergePDF(dtA);
     const pdfBlob = new Blob([dt], { type: "application/pdf" });
-    const url = URL.createObjectURL(pdfBlob);
-    console.log(url);
-    setUrl(url);
+    const mergedPdfUrl = URL.createObjectURL(pdfBlob);
+    console.log(mergedPdfUrl);
+    setUrl(mergedPdfUrl);
   };
 
   const handlePDFPreview = async () => {
@@ -65,6 +66,10 @@ function App() {
 
   const handlePDFDownload = async () => {
     await handlePDFMerge();
+    if (!url) {
+      alert("URL is not generated. Please try again!");
+      return;
+    }
     const a = document.createElement("a");
     a.href = url;
     a.download = formData.filename || "output.pdf";

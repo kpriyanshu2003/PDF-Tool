@@ -1,6 +1,9 @@
 import React from "react";
+import { defaultContextValue, FormDataContextType } from "../@types/FormData";
 
-export const FormDataContext = React.createContext({});
+export const FormDataContext =
+  React.createContext<FormDataContextType>(defaultContextValue);
+
 export default function FormDataContextProvider({
   children,
 }: {
